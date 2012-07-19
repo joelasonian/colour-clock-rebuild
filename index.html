@@ -1,0 +1,148 @@
+<!DOCTYPE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>The Colour Clock Rebuild using jQuery/CSS3</title>
+<link rel="image_src" href="http://www.joelpeterson.com/clock/images/thumb.jpg" />
+<link rel="stylesheet" href="clock.css" />
+</head>
+
+<body>
+<div id="site_wrap">
+	<div class="contentbox">
+    	<p>The original <a href="http://thecolourclock.co.uk/">Colour Clock</a> is a brilliant idea by <a href="http://www.lookatjack.com/">Jack Hughes</a> representing time as a hexadecimal value.</p>
+    	<p>This exercise is a jQuery/CSS3 rebuild.</p>
+        <div class="bg"></div>
+    </div>
+	<div id="clock_wrap">
+        <div id="clock"></div>
+        <div id="hex"></div>
+        <div id="clock_bg"></div>
+    </div>
+    <div id="explain_wrap">
+    	<div class="explain_color">
+        <p>HOURS:</p>
+        <div id="red_display" class="explain_display">00</div>
+        <div class="explain_label">0</div><div class="scale"></div><div class="explain_label">23</div>
+        </div>
+        <div class="explain_color">
+        <p>MINUTES:</p>
+        <div id="green_display" class="explain_display">01</div>
+        <div class="explain_label">0</div><div class="scale"></div><div class="explain_label">59</div>
+        </div>
+        <div class="explain_color">
+        <p>SECONDS:</p>
+        <div id="blue_display" class="explain_display">02</div>
+        <div class="explain_label">0</div><div class="scale"></div><div class="explain_label">59</div>
+    	</div>
+        <div class="bg"></div>
+    </div>
+    <div class="contentbox">
+        <div class="fb">
+        <iframe src="http://www.facebook.com/plugins/like.php?href=www.joelpeterson.com%2Fclock&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=recommend&amp;font=trebuchet+ms&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
+        </div>
+        <div class="twitter">
+        <img src="images/twittericon.png" width="32" height="25" alt="twitter icon" align="right" /><a href="http://www.twitter.com/joelasonian">@joelasonian</a>
+        </div>
+        <div class="clear"></div>
+        <div class="bgw"></div>
+    </div>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> 
+<script>window.jQuery || document.write('<script src="js/jquery-1.7.2.min.js"><\/script>')</script> 
+
+<script>
+var maxnumhours = 23;
+var maxnummins = 59;
+var maxnumsecs = 60;
+var maxmilisecs = 999;
+
+$(document).ready(function() {
+  updateClock(); 
+  setInterval('updateClock()', 250 );
+});
+
+function hexifyWithZeroLead(tohex){
+	var rtn = tohex.toString(16);
+	return ( rtn.length == 1 ? "0" : "" ) + rtn;
+}
+
+function updateClock ( )
+{
+  //Set Current Time Variables
+  var currentTime = new Date ( );
+  var currentHours = currentTime.getHours();
+  var currentMinutes = currentTime.getMinutes();
+  var currentSeconds = currentTime.getSeconds();
+  var currentMiliSeconds = currentTime.getMilliseconds();
+  var rounded = currentSeconds + (currentMiliSeconds / maxmilisecs);
+  
+  //Get Color Percentages based off time.
+  //Percentage of 255 for Color
+  //Percentage of 100 for Position
+  rednum = (Math.round(255 * ((currentHours) / maxnumhours)));	 
+  rednum100 = (Math.round(100 * ((currentHours) / maxnumhours)));
+  greennum = (Math.round(255 * ((currentMinutes) / maxnummins)));
+  greennum100 = (Math.round(100 * ((currentMinutes) / maxnummins)));
+  bluenum = (Math.round(255 * ((rounded) / maxnumsecs)));
+  bluenum100 = (Math.round(100 * ((rounded) / maxnumsecs)));
+  
+  //convert to HEX
+  redhex = hexifyWithZeroLead(rednum);
+  greenhex = hexifyWithZeroLead(greennum);
+  bluehex = hexifyWithZeroLead(bluenum);
+  
+  //Create the Hex Strings
+  var hex = "#" + redhex + greenhex + bluehex;		//Total HEX Value
+  var fullredhex = "#"+redhex+"0000";				//RED Only Hex
+  var fullgreenhex = "#00"+greenhex+"00";			//GREEN Only Hex
+  var fullbluehex = "#0000"+bluehex;				//BLUE Only Hex
+
+  //Text to indvidual color sliders
+  jQuery("#red_display").html(redhex);
+  jQuery("#green_display").html(greenhex);
+  jQuery("#blue_display").html(bluehex);
+  
+  //Position and animate color sliders
+  leftpos = (rednum100 * 0.01 * 575) + 25;
+  jQuery('#red_display').animate({left: leftpos}, 200);
+  jQuery('#red_display').css('background-color',fullredhex);
+
+  leftpos = (greennum100 * 0.01 * 575) + 25;
+  jQuery('#green_display').animate({left: leftpos}, 200);
+  jQuery('#green_display').css('background-color',fullgreenhex);
+
+  leftpos = (bluenum100 * 0.01 * 575) + 25;
+  jQuery('#blue_display').animate({left: leftpos}, 200);
+  jQuery('#blue_display').css('background-color',fullbluehex);
+
+  
+  //zerolead the time for display
+  currentHours = ( currentHours < 10 ? "0" : "" ) + currentHours;
+  currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+  currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
+  
+  //append the values
+  jQuery("#clock").html("<span id='hours'>"+ currentHours + "</span>:<span id='minutes'>" + currentMinutes + "</span>:<span id='seconds'>" + currentSeconds + '</span>');
+  jQuery("#hex").html(hex);
+  
+  //change the background of the page to current HEX color
+  jQuery('body').css('background-color',hex);
+}
+</script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19815649-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>
